@@ -7,7 +7,7 @@ import os
 class CurrentSeries(object):
     """ Tracks the currently selected series """
 
-    SETTINGS_FILE = '~/.play_next'
+    SETTINGS_FILE = os.path.join(os.getenv('HOME'), '.play_next')
 
     def __init__(self):
         """ Loads the settings from the file """
@@ -19,7 +19,7 @@ class CurrentSeries(object):
         }
         with open(self.SETTINGS_FILE) as settings:
             for line in settings:
-                name, value = line.split('=', 1)
+                name, value = [e.strip() for e in line.split('=', 1)]
                 if name in self.settings:
                     self.settings[name] = value
 
@@ -39,49 +39,49 @@ class CurrentSeries(object):
         """ Set the current episode """
         self.settings['episode'] = episode
 
-    def episode_list(self):
+    def get_episode_list(self):
         """ All episodes reachable """
         # It may be appropriate to turn this into a generator, but that would
         # prevent sorting.
-        if self.show() is None:
+        if self.get_show() is None:
             raise Exception('Cannot produce episode list, show currently unset')
 
         return sorted([
             os.path.join(d, f)
-            for (d, _, files) in os.walk(self.show())
+            for (d, _, files) in os.walk(self.get_show())
             for f in files
         ])
 
     def find_previous(self):
         """ Look one episode back.
             Returns None when moving past the start of the list """
-        if self.episode() is None:
-            return self.episode_list()[-1]
+        if self.get_episode() is None:
+            return self.get_episode_list()[-1]
 
         last_episode = None
-        for episode in self.episode_list():
-            if episode == self.episode():
+        for episode in self.get_episode_list():
+            if episode == self.get_episode():
                 return last_episode
             last_episode = episode
 
-        raise Exception("Cannot find {episode} in {show}".format(self.settings))
+        raise Exception("Cannot find {episode} in {show}".format(**self.settings))
 
     def find_next(self):
         """ Look one episode forwards.
             Returns None when moving past the end of the list """
-        if self.episode() is None:
+        if self.get_episode() is None:
             return self.episode_list()[0]
 
         next_episode = False
-        for episode in self.episode_list():
+        for episode in self.get_episode_list():
             if next_episode:
                 return episode
-            if episode == self.episode():
+            if episode == self.get_episode():
                 next_episode = True
         if next_episode:
             return None
 
-        raise Exception("Cannot find {episode} in {show}".format(self.settings))
+        raise Exception("Cannot find {episode} in {show}".format(**self.settings))
 
     def go_previous(self):
         """ Move one episode backwards. """
@@ -93,8 +93,8 @@ class CurrentSeries(object):
 
     def write(self):
         """ Writes the current state back to the settings file """
-        with open(self.SETTINGS_FILE) as settings:
-            for (name, value) in self.settings.entries():
+        with open(self.SETTINGS_FILE, 'w') as settings:
+            for (name, value) in self.settings.items():
                 settings.write("{name} = {value}\n".format(name=name, value=value))
 
 # vim: set ai et sw=4 syntax=python :

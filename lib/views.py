@@ -1,5 +1,6 @@
 """ Provides the control methods for the player """
 
+import os
 import subprocess
 
 from .models import CurrentSeries

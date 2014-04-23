@@ -24,7 +24,7 @@ def do_set():
     """ Set the current directory as the source of videos """
     series = CurrentSeries()
     series.set_show(os.getcwd())
-    series.set_episode(None)
+    series.go_first()
     series.write()
 
 # vim: set ai et sw=4 syntax=python :

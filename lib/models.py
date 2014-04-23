@@ -83,6 +83,10 @@ class CurrentSeries(object):
 
         raise Exception("Cannot find {episode} in {show}".format(**self.settings))
 
+    def go_first(self):
+        """ Move to the first episode. """
+        self.settings['episode'] = self.get_episode_list()[0]
+
     def go_previous(self):
         """ Move one episode backwards. """
         self.settings['episode'] = self.find_previous()

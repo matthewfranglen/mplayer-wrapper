@@ -70,7 +70,7 @@ class CurrentSeries(object):
         """ Look one episode forwards.
             Returns None when moving past the end of the list """
         if self.get_episode() is None:
-            return self.episode_list()[0]
+            return self.get_episode_list()[0]
 
         next_episode = False
         for episode in self.get_episode_list():

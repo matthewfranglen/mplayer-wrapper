@@ -21,7 +21,7 @@ class CurrentSeries(object):
             for line in settings:
                 name, value = [e.strip() for e in line.split('=', 1)]
                 if name in self.settings:
-                    self.settings[name] = value
+                    self.settings[name] = value if len(value) else None
 
     def get_show(self):
         """ The show folder, containing all episodes (directly or indirectly) """
@@ -95,6 +95,9 @@ class CurrentSeries(object):
         """ Writes the current state back to the settings file """
         with open(self.SETTINGS_FILE, 'w') as settings:
             for (name, value) in self.settings.items():
-                settings.write("{name} = {value}\n".format(name=name, value=value))
+                if value is None:
+                    settings.write("{name} =\n".format(name=name))
+                else:
+                    settings.write("{name} = {value}\n".format(name=name, value=value))
 
 # vim: set ai et sw=4 syntax=python :

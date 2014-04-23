@@ -12,13 +12,20 @@ def do_play():
     series.go_next()
     series.write()
 
-    subprocess.call(['mplayer', episode])
+    if episode is None:
+        print "Unable to play, no available video"
+    else:
+        subprocess.call(['mplayer', episode])
 
 def do_back():
     """ Moves back one video """
     series = CurrentSeries()
     series.go_previous()
-    series.write()
+
+    if series.get_episode() is None:
+        print "Unable to move back, at first episode"
+    else:
+        series.write()
 
 def do_set():
     """ Set the current directory as the source of videos """
